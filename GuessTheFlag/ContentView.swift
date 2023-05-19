@@ -44,8 +44,7 @@ struct ContentView: View {
                             Button {
                                 flagTapped(index)
                             } label: {
-                                Image(countries[index])
-                                    .shadow(radius: 5)
+                                modifier(FlagImage(country: countries[index]))
                             }
                         }
                     }
@@ -76,6 +75,14 @@ struct ContentView: View {
         }
     }
 
+    struct FlagImage: ViewModifier {
+        var country: String
+        func body(content: Content) -> some View {
+            Image(country)
+                .shadow(radius: 5)
+        }
+        
+    }
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct"
