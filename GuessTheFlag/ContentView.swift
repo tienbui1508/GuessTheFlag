@@ -26,10 +26,10 @@ struct FlagImage: ViewModifier {
     func body(content: Content) -> some View {
         content
             .shadow(radius: 5)
+         
     }
     
 }
-
 
 struct ContentView: View {
     @State private var showingScore = false
@@ -39,7 +39,9 @@ struct ContentView: View {
     @State private var correctAnswer = Int.random(in: 0...2)
     @State private var score = 0
     @State private var questionCounter = 1
-
+    
+    @State private var selectedFlag = -1
+    
     static let allCountries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"]
 
     var body: some View {
@@ -64,12 +66,16 @@ struct ContentView: View {
                     }
 
                     VStack(spacing: 20) {
-                        ForEach(0 ..< 3) { index in
+                        ForEach(0 ..< 3) { number in
                             Button {
-                                flagTapped(index)
+                                flagTapped(number)
                             } label: {
-                                Image(countries[index])
+                                Image(countries[number])
                                     .modifier(FlagImage())
+                                    .rotation3DEffect(.degrees(selectedFlag == number ? 360 : 0), axis: (x: 1, y: 1, z: 1))
+                                    .opacity(selectedFlag == -1 || selectedFlag == number ? 1 : 0.25)
+                                    .scaleEffect(selectedFlag == -1 || selectedFlag == number ? 1 : 0.75 )
+                                    .animation(.default, value: selectedFlag)
                             }
                         }
                     }
@@ -104,6 +110,7 @@ struct ContentView: View {
 
     
     func flagTapped(_ number: Int) {
+        selectedFlag = number
         if number == correctAnswer {
             scoreTitle = "Correct"
             score += 1
@@ -119,6 +126,7 @@ struct ContentView: View {
         if questionCounter == 8 {
             showingResult = true
         }
+            
     }
 
     func askQuestion() {
@@ -127,6 +135,7 @@ struct ContentView: View {
             countries.shuffle()
             correctAnswer = Int.random(in: 0...2)
             questionCounter += 1
+            selectedFlag = -1
         }
     }
 
